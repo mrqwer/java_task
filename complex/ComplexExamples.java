@@ -1,3 +1,5 @@
+// package javacourse.core.complex;
+
 // import lombok.EqualsAndHashCode;
 // import lombok.Getter;
 // import lombok.Setter;
@@ -5,11 +7,19 @@
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 // import static java.util.stream.Collectors.groupingBy;
 
 public class ComplexExamples {
@@ -46,7 +56,7 @@ public class ComplexExamples {
 
         @Override
         public String toString(){
-            return "Person: " + name;
+            return name;
         }
     }
 
@@ -130,36 +140,39 @@ public class ComplexExamples {
         Сперва убираю дупликаты, просто добавляя каждый экзепляр класса Person в HashMap,
         он сам уберет дупликаты, так как внутри класса переопределены методы equals и hashCode
         */
-        System.out.println("Task 1");
-        Map<Person, Integer> map = new HashMap<>();
 
-        for(int i = 0; i < RAW_DATA.length; i++){
-            map.put(RAW_DATA[i], RAW_DATA[i].getId());
-        }
+        // System.out.println("Task 1");
+        // Map<Person, Integer> map = new HashMap<>();
+
+        // for(int i = 0; i < RAW_DATA.length; i++){
+        //     map.put(RAW_DATA[i], RAW_DATA[i].getId());
+        // }
+        // System.out.println(map);
 
         /* 
         Дальше создаю новую хэш-карту по ключам именам каждого экзепляра и значение список состоящий из id каждого человека
         входящего в одну группу схожих имен.
         */
-        Map<String, List<Integer>> map2 = new HashMap<>();
-        for(Map.Entry<Person, Integer> entry : map.entrySet()){
-            if (!map2.containsKey(entry.getKey().getName())){ // если нет нашего имени в новой карте map2 
-                List<Integer> a = new ArrayList<>(); // создаем список из id. сработает только один раз для каждой уникальной группы имен
-                a.add(entry.getValue()); // добавляем id из значений каждого ключа предыдущей карты в список id текущей группы имен, также сработает один раз для каждого уникального имени
-                map2.put(entry.getKey().getName(), a); // добавляем имя группы и список состоящий пока из одного элемента
-            }
-            else{
-                map2.get(entry.getKey().getName()).add(entry.getValue()); // при нахождений схожих имен уже имеющегося ключа в карте, добавляем в список id
-            }
-        }
 
-        for(Map.Entry<String, List<Integer>> entry: map2.entrySet()){
-            Collections.sort(entry.getValue());
-            System.out.println("Key:"+entry.getKey() + " | " + "List of each persons id in this group by non-decreasing order:" + entry.getValue());
-            System.out.println("Value:" + entry.getValue().size());
+        // Map<String, List<Integer>> map2 = new HashMap<>();
+        // for(Map.Entry<Person, Integer> entry : map.entrySet()){
+        //     if (!map2.containsKey(entry.getKey().getName())){ // если нет нашего имени в новой карте map2 
+        //         List<Integer> a = new ArrayList<>(); // создаем список из id. сработает только один раз для каждой уникальной группы имен
+        //         a.add(entry.getValue()); // добавляем id из значений каждого ключа предыдущей карты в список id текущей группы имен, также сработает один раз для каждого уникального имени
+        //         map2.put(entry.getKey().getName(), a); // добавляем имя группы и список состоящий пока из одного элемента
+        //     }
+        //     else{
+        //         map2.get(entry.getKey().getName()).add(entry.getValue()); // при нахождений схожих имен уже имеющегося ключа в карте, добавляем в список id
+        //     }
+        // }
 
-        }
-        System.out.println("The End of Task 1\n");
+        // for(Map.Entry<String, List<Integer>> entry: map2.entrySet()){
+        //     Collections.sort(entry.getValue());
+        //     System.out.println("Key:"+entry.getKey() + " | " + "List of each persons id in this group by non-decreasing order:" + entry.getValue());
+        //     System.out.println("Value:" + entry.getValue().size());
+
+        // }
+        // System.out.println("The End of Task 1\n");
 
         /*
         Task2
@@ -202,8 +215,30 @@ public class ComplexExamples {
          System.out.println(fuzzySearch("cwheeel", "cartwheel"));
          System.out.println(fuzzySearch("lw", "cartwheel"));
          System.out.println("The end of Task 3");
+
+        
+        
+        System.out.println("The modified solution of the Task 1");
+        List<String> ar1 = Arrays.asList(RAW_DATA)
+        .stream()
+        .distinct()
+        .map(person -> person.getName())
+        .collect(Collectors.toList());
+
+        Set<String> itemToFilter = ar1
+        .stream()
+        .distinct()
+        .collect(Collectors.toCollection(HashSet::new));
+        
+
+        Map<String, Long> m = ar1.stream()
+        .filter(person -> itemToFilter.contains(person))
+        .collect(Collectors.groupingBy(person -> person, Collectors.counting()));
+        
+        System.out.println(m);
+
     }
-    
+
     public static boolean fuzzySearch(String pattern, String string){
         if(string.equals(pattern)) return true;
         int i = 0, j = 0;
